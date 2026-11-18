@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 
 data class Post(
     val id: Int,
+    val documentId: String? = null,
     val title: String? = null,
     val description: String? = null,
     val body: String,

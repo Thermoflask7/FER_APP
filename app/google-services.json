@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "895878487868",
+    "project_id": "fer-app-181d8",
+    "storage_bucket": "fer-app-181d8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895878487868:android:5ecaf4dd02fd67b0570839",
+        "android_client_info": {
+          "package_name": "zaragoza.mateo.ferpantallas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAW_9vz7cKgMDmUsYl_4yzBzb4ya2gpb50"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

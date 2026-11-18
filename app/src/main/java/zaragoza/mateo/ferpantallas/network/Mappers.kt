@@ -87,6 +87,7 @@ fun PostDto.toModel(): Post? {
 
     return Post(
         id = postId,
+        documentId = documentId,
         title = title?.takeIf { it.isNotBlank() },
         description = description?.takeIf { it.isNotBlank() },
         body = body.orEmpty(),

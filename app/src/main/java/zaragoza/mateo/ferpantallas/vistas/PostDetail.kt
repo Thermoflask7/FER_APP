@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -53,6 +54,7 @@ import java.time.format.DateTimeFormatter
 fun PostDetailScreen(
     postId: Int,
     onBack: () -> Unit,
+    documentId: String? = null,
     viewModel: PostVM = viewModel()
 ) {
     val context = LocalContext.current
@@ -60,7 +62,16 @@ fun PostDetailScreen(
     val posts by viewModel.posts.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
-    val post = posts.firstOrNull { it.id == postId }
+    val post = posts.firstOrNull {
+        documentId != null && it.documentId == documentId || it.id == postId
+    }
+    android.util.Log.d("FCM", "4. Detail doc=$documentId found=${post != null} loading=$isLoading count=${posts.size}")
+
+    LaunchedEffect(documentId) {
+        if (documentId != null && posts.none { it.documentId == documentId }) {
+            viewModel.refresh()
+        }
+    }
 
     if (post == null && isLoading) {
         LoadingMessage(onBack = onBack)
