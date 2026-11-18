@@ -1,4 +1,4 @@
-package zaragoza.mateo.ferpantallas.vistas
+    package zaragoza.mateo.ferpantallas.vistas
 
 import android.app.Activity
 import android.content.Context
@@ -37,6 +37,8 @@ import zaragoza.mateo.ferpantallas.viewmodels.AboutYouViewModel
 
 @Composable
 fun AppFrame(
+    openPostDocumentId: String? = null,
+    onOpenPostHandled: () -> Unit = {},
     settingsViewModel: SettingsViewModel = viewModel(),
     aboutYouViewModel: AboutYouViewModel = viewModel(),
 ) {
@@ -53,6 +55,19 @@ fun AppFrame(
     var postId by rememberSaveable { mutableIntStateOf(-1) }
     var eventId by rememberSaveable { mutableIntStateOf(-1) }
     var detailOrigin by rememberSaveable { mutableStateOf(Destination.FEED.name) }
+    var postDocumentId by rememberSaveable { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(openPostDocumentId, aboutYouViewModel.welcomeCompleted) {
+        android.util.Log.d("FCM", "3. AppFrame effect id=$openPostDocumentId welcome=${aboutYouViewModel.welcomeCompleted}")
+        if (openPostDocumentId != null && aboutYouViewModel.welcomeCompleted) {
+            detailOrigin = Destination.FEED.name
+            postId = -1
+            postDocumentId = openPostDocumentId
+            destination = Destination.POST_DETAIL
+            onOpenPostHandled()
+        }
+    }
+
     LaunchedEffect(aboutYouViewModel.welcomeCompleted) {
         if (!aboutYouViewModel.welcomeCompleted) {
             destination = Destination.BIENVENIDA
@@ -90,6 +105,7 @@ fun AppFrame(
                     onPostClick = { id ->
                         detailOrigin = Destination.FEED.name
                         postId = id
+                        postDocumentId = null
                         destination = Destination.POST_DETAIL
                     },
                     onEventClick = { id ->
@@ -102,6 +118,7 @@ fun AppFrame(
                     onPostClick = { id ->
                         detailOrigin = Destination.LIKED.name
                         postId = id
+                        postDocumentId = null
                         destination = Destination.POST_DETAIL
                     },
                     onEventClick = { id ->
@@ -112,6 +129,7 @@ fun AppFrame(
                 )
                 Destination.POST_DETAIL -> PostDetailScreen(
                     postId = postId,
+                    documentId = postDocumentId,
                     onBack = { destination = Destination.valueOf(detailOrigin) },
                 )
                 Destination.EVENT_DETAIL -> EventDetailScreen(
