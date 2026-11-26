@@ -1,0 +1,57 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches: ["**"]        # every commit on any branch
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Gradle (with cache)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Upload test reports
+        if: always()          # keep the reports even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: app/build/reports/tests/
+
+  build:
+    name: Build APKs
+    needs: test               # only runs if the tests passed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug and release APKs
+        run: ./gradlew assembleDebug assembleRelease
+
+      - name: Upload APKs to artifact store
+        uses: actions/upload-artifact@v4
+        with:
+          name: fer-app-apk-${{ github.sha }}
+          path: app/build/outputs/apk/**/*.apk
+          retention-days: 30
